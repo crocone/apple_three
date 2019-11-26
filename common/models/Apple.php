@@ -4,7 +4,6 @@
 namespace common\models;
 
 use yii\db\ActiveRecord;;
-use yii\web\ForbiddenHttpException;
 
 /**
  * This is the model class for table "{{%apple}}".
@@ -71,7 +70,6 @@ class Apple extends ActiveRecord
 
     /**
      * @return array|bool
-     * @throws ForbiddenHttpException
      */
     public function fallToGround(){
         if($this->status != self::STATUS_HANGING){
