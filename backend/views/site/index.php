@@ -33,7 +33,7 @@ use common\models\Apple; ?>
             <div class="ground">
                 <div class="apples">
                 <?php foreach ($groundApples as $apple): ?>
-                    <div class="apple <?= $apple->color ?> <?= $apple->status == Apple::STATUS_ROTTEN ? 'rotten' : '' ?>"  title="<?= $apple->size * 100 ?> %" data-toggle="modal" data-target="#eat-modal" data-id="<?= $apple->id ?>" data-percent="<?= $apple->size * 100 ?> %" style="z-index: 7; left:<?= $apple->left ?>px">
+                    <div class="apple <?= $apple->color ?> <?= $apple->status == Apple::STATUS_ROTTEN ? 'rotten' : '' ?>"  title="<?= $apple->size * 100 ?> %" data-toggle="modal" data-target="#eat-modal" data-id="<?= $apple->id ?>" data-percent="<?= $apple->size * 100 ?> %" style="z-index: 7; left:<?= $apple->left + $apple->id ?>px">
                         <p><?= $apple->size * 100 ?></p>
                     </div>
                 <?php endforeach; ?>
