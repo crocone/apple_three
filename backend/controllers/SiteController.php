@@ -7,6 +7,7 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\LoginForm;
+use yii\web\ForbiddenHttpException;
 
 /**
  * Site controller
@@ -20,21 +21,29 @@ class SiteController extends Controller
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'rules' => [
                     [
                         'actions' => ['login', 'error'],
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['logout', 'index'],
+                        'actions' => ['logout', 'index','generate-apples', 'fall-to-ground','eat'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
                 ],
             ],
+            'contentNegotiator' => [
+                'class' => \yii\filters\ContentNegotiator::class,
+                'only' => ['generate-apples', 'fall-to-ground','eat'],
+                'formatParam' => '_format',
+                'formats' => [
+                    'application/json' => \yii\web\Response::FORMAT_JSON,
+                ],
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'logout' => ['post'],
                 ],
@@ -58,13 +67,36 @@ class SiteController extends Controller
      * Displays homepage.
      *
      * @return string
-     * @throws \yii\db\Exception
-     * @throws \yii\web\HttpException
      */
     public function actionIndex()
     {
+        return $this->render('index',[
+            'treeApples' => Apple::findAll(['status' => Apple::STATUS_HANGING]),
+            'groundApples' => Apple::findAll(['status' => [Apple::STATUS_FALL, Apple::STATUS_ROTTEN]])
+        ]);
+    }
+
+    public function actionGenerateApples(){
         $apple = new Apple();
-        $apple->generateApples();
+        if(!$apple->generateApples(Yii::$app->request->get('count', false))){
+            return ['result' => 'error'];
+        };
+        return ['result' => 'success'];
+    }
+
+
+    public function actionFallToGround($id){
+        $apple = Apple::findOne($id);
+        if (!$apple->fallToGround()) {
+            return ['result' => 'error'];
+        }
+        return ['result' => 'success'];
+    }
+
+    public function actionEat($id, $percent){
+        $apple = Apple::findOne($id);
+
+        return $apple->eat($percent);
     }
 
     /**
